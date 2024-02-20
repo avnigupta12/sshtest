@@ -8,10 +8,21 @@ import { CreateUserDto, LoginUserDto, UpdateUserDto } from './dto';
 import { User } from './user.entity';
 import { IUserRO } from './user.interface';
 import { UserRepository } from './user.repository';
-
+import { RosterDto } from './dto';
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository, private readonly em: EntityManager) {}
+
+  async getRoster(): Promise<RosterDto[]> {
+    const rosterData = await this.userRepository.getRoster();
+    return rosterData.map(row => new RosterDto(
+        row.username,
+        row.image,
+        row.articles_count,
+        row.favorites_count,
+        row.first_article_date || null
+    ));
+}
 
   async findAll(): Promise<User[]> {
     return this.userRepository.findAll();
